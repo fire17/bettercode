@@ -13,7 +13,7 @@
 
 <i>Your muscle memory doesn't change. What it means does.</i>
 
-**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🪄 -pp pass-through](#-pp--the-pass-through-prompt)** · **[🛡️ Safety](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
+**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🪄 -pp pass-through](#--pp--the-pass-through-prompt)** · **[🛡️ Safety](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
 
 </div>
 
@@ -76,7 +76,7 @@ flowchart LR
 | `code` | interactive Claude Code session | [full expansion](#-what-happens-when-you-type-it) |
 | `code -p any words here` | one-shot prompt, exits with the answer | quotes optional — [why](#-the-part-that-should-stop-you) |
 | `code -p "quoted too"` | identical result | |
-| `code -pp any words here` | opens a NORMAL session, prompt typed in as if you wrote it | [pass-through](#-pp--the-pass-through-prompt) |
+| `code -pp any words here` | opens a NORMAL session, prompt typed in as if you wrote it | [pass-through](#--pp--the-pass-through-prompt) |
 | `code --effort low -p quick q` | effort pre-set (`low…max`) | flags go **before** `-p` |
 | `code --model haiku -p cheap q` | model pre-set | any claude flag works |
 | `code --resume` | plain passthrough | no `-p`, no rewriting |
@@ -111,7 +111,7 @@ while one is up — live-verified), and on timeout it types nothing, ever.
 | uninstall? | delete the `# >>> bettercode >>>` block. Done. |
 | VS Code installed later? | picked up automatically on next shell start — appears as `vscode` |
 | scripts calling `code`? | shell functions don't leak into scripts/CI — only your interactive shell changes |
-| `-pp` typing into the wrong thing? | three-phase guard: claude-running AND screen-cleared AND composer-ready, else it types nothing — see [pass-through](#-pp--the-pass-through-prompt) |
+| `-pp` typing into the wrong thing? | three-phase guard: claude-running AND screen-cleared AND composer-ready, else it types nothing — see [pass-through](#--pp--the-pass-through-prompt) |
 | `--dangerously-skip-permissions`?! | **that's the point of this wrapper** — Claude runs tools without asking. Know what it implies, or edit [the plugin](bettercode.plugin.zsh): it's ~30 lines |
 
 ## 🔮 Roadmap: the patch mechanism
