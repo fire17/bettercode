@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+# bettercode -pp fallback (no multiplexer): run claude on a fresh pty, forward
+# the user's keys from the very first frame (so the trust dialog stays
+# answerable), and type the prompt once the composer's ready marker appears.
+# The prompt travels in BETTERCODE_PROMPT (env) — zero quoting surface.
+# The pty is fresh, so no stale-frame race exists on this path.
+
+if {![info exists env(BETTERCODE_PROMPT)] || $env(BETTERCODE_PROMPT) eq ""} {
+  puts stderr "bettercode-pp.exp: BETTERCODE_PROMPT is not set"
+  exit 1
+}
+
+spawn -noecho claude --dangerously-skip-permissions --teammate-mode tmux {*}$argv
+
+# keep the claude pty sized like the real terminal, now and on every resize
+proc syncsize {} {
+  global spawn_out
+  if {[catch {exec stty size < /dev/tty} s]} return
+  lassign $s rows cols
+  catch {exec stty rows $rows columns $cols < $spawn_out(slave,name)}
+}
+syncsize
+trap syncsize WINCH
+
+interact {
+  -o
+  -ex "bypass permissions on" {
+    after 300
+    send -- $env(BETTERCODE_PROMPT)
+    after 300
+    send -- "\r"
+    interact
+  }
+}

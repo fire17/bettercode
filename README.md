@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/fire17/bettercode/actions/workflows/ci.yml/badge.svg)](https://github.com/fire17/bettercode/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/fire17/bettercode?color=e8b84a)](https://github.com/fire17/bettercode/releases)
-[![tests](https://img.shields.io/badge/tests-12%2F12%20passing-4ae87a)](test.sh)
+[![tests](https://img.shields.io/badge/tests-18%2F18%20passing-4ae87a)](test.sh)
 [![deps](https://img.shields.io/badge/dependencies-0-blue)](bettercode.plugin.zsh)
 [![zsh](https://img.shields.io/badge/shell-zsh-c8d4ea)](bettercode.plugin.zsh)
 [![VS Code](https://img.shields.io/badge/VS%20Code-preserved%20as%20vscode-7bc4f5)](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)
@@ -13,14 +13,14 @@
 
 <i>Your muscle memory doesn't change. What it means does.</i>
 
-**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🛡️ Safety](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
+**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🪄 -pp pass-through](#-pp--the-pass-through-prompt)** · **[🛡️ Safety](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
 
 </div>
 
 ---
 
 `code` now opens **Claude Code**. Your old `code` (VS Code) lives on as `vscode`.
-One zsh plugin, ~30 lines, zero dependencies. Part of the `better*` family
+One zsh plugin, zero dependencies. Part of the `better*` family
 ([bettercd](https://github.com/fire17/bettercd) · [betterkill](https://github.com/fire17/betterkill)).
 
 ## ⚡ Quickstart
@@ -76,10 +76,31 @@ flowchart LR
 | `code` | interactive Claude Code session | [full expansion](#-what-happens-when-you-type-it) |
 | `code -p any words here` | one-shot prompt, exits with the answer | quotes optional — [why](#-the-part-that-should-stop-you) |
 | `code -p "quoted too"` | identical result | |
+| `code -pp any words here` | opens a NORMAL session, prompt typed in as if you wrote it | [pass-through](#-pp--the-pass-through-prompt) |
 | `code --effort low -p quick q` | effort pre-set (`low…max`) | flags go **before** `-p` |
 | `code --model haiku -p cheap q` | model pre-set | any claude flag works |
 | `code --resume` | plain passthrough | no `-p`, no rewriting |
 | `vscode .` | your previous `code`, untouched | [safety ladder](#%EF%B8%8F-nothing-is-lost-the-safety-ladder) |
+
+## 🪄 -pp — the pass-through prompt
+
+`code -pp fix the failing test` opens a fully interactive Claude Code session and
+**types the prompt into the composer once it's ready** — claude has no idea it
+wasn't you (print mode never engages, the session stays yours afterwards). Works
+even while the pane is focused, in every environment:
+
+| You're in | Injection lane | Focus-proof because |
+|---|---|---|
+| [herdr](https://github.com/fire17) | `herdr pane read`/`send-text` server API | server-side, never touches your keyboard |
+| tmux | `tmux capture-pane`/`send-keys` | same |
+| bare terminal | bundled `expect` pty wrapper ([bettercode-pp.exp](bettercode-pp.exp)) | it owns claude's pty |
+| none of those | prints a warning, opens claude normally | — |
+
+Safety is structural — the watcher types **only** when all three hold, in order:
+claude is the pane's foreground process → the ready marker was seen **absent**
+(new claude cleared the screen — kills the stale-frame race) → the marker is
+**present**. Trust dialogs are never answered for you (the marker doesn't exist
+while one is up — live-verified), and on timeout it types nothing, ever.
 
 ## 🛡️ Nothing is lost: the safety ladder
 
@@ -90,6 +111,7 @@ flowchart LR
 | uninstall? | delete the `# >>> bettercode >>>` block. Done. |
 | VS Code installed later? | picked up automatically on next shell start — appears as `vscode` |
 | scripts calling `code`? | shell functions don't leak into scripts/CI — only your interactive shell changes |
+| `-pp` typing into the wrong thing? | three-phase guard: claude-running AND screen-cleared AND composer-ready, else it types nothing — see [pass-through](#-pp--the-pass-through-prompt) |
 | `--dangerously-skip-permissions`?! | **that's the point of this wrapper** — Claude runs tools without asking. Know what it implies, or edit [the plugin](bettercode.plugin.zsh): it's ~30 lines |
 
 ## 🔮 Roadmap: the patch mechanism
@@ -129,10 +151,16 @@ Defects the process caught before you could hit them:
   stubs claude deterministically instead
 - **the alias trap**: a pre-existing `alias code=…` would hijack the function definition —
   the plugin `unalias`es first (asserted in [test.sh](test.sh))
+- **the pgroup trap** (v0.2.0): tmux's `pane_current_command` reports the foreground
+  process-*group leader* — claude launched from a script reports `zsh` forever; the
+  watcher scans the pane's tty (`ps -t`) instead
+- **the stale-frame race** (v0.2.0): a dead claude's last frame still shows the ready
+  marker; injecting then could answer the NEXT claude's trust dialog — hence the
+  three-phase watcher, which live-tests proved holds through a real dialog
 
-Verification is enforced, not asserted: every push runs the 12-assertion suite on
+Verification is enforced, not asserted: every push runs the 18-assertion suite on
 ubuntu **and** macos ([ci.yml](.github/workflows/ci.yml)) with claude and VS Code
-stubbed — no network, no real config touched. The `12/12` badge is the suite's own
+stubbed — no network, no real config touched. The `18/18` badge is the suite's own
 observed output.
 
 ## ⭐ If your `code` means Claude now

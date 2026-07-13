@@ -48,6 +48,8 @@ print -r -- "'code' now launches Claude Code (permissions skipped, tmux teammate
 print -r -- "    code                          # interactive session"
 print -r -- "    code -p fix the failing test  # one-shot prompt, quotes optional"
 print -r -- "    code --effort low -p quick q  # any claude flag works — put it BEFORE -p"
+print -r -- "    code -pp fix this bug         # pass-through: NORMAL session, prompt typed"
+print -r -- "                                  # in for you once the composer is ready"
 print -r -- ""
 print -r -- "Coming soon: an intelligent patch mechanism for Claude Code itself —"
 print -r -- "personal & community patches (better --resume, built-in search, ...),"

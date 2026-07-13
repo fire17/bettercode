@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.2.0 — 2026-07-13
+
+**`-pp` — the pass-through prompt.** `code -pp any words here` opens a normal
+interactive session and types the prompt into the composer as if the user wrote it
+(claude never sees print mode; the session stays interactive after the answer).
+
+- three injection lanes, auto-detected: herdr pane API → tmux send-keys → bundled
+  `expect` pty wrapper for bare terminals; warning + plain session when none exist
+- focus-proof: herdr/tmux lanes are server-side; expect owns the pty
+- three-phase fail-safe (claude running → screen cleared → composer ready): never
+  types into a shell, never answers a trust dialog, types nothing on timeout —
+  live-verified through a real trust dialog
+- suite grown to 18 assertions (dispatch, stale-frame guard, claude-exit abort,
+  per-lane argv contracts); all three lanes live-verified end-to-end
+
+
 ## v0.1.0 — 2026-07-13
 
 Initial release.
