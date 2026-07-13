@@ -7,13 +7,13 @@
 [![tests](https://img.shields.io/badge/tests-12%2F12%20passing-4ae87a)](test.sh)
 [![deps](https://img.shields.io/badge/dependencies-0-blue)](bettercode.plugin.zsh)
 [![zsh](https://img.shields.io/badge/shell-zsh-c8d4ea)](bettercode.plugin.zsh)
-[![VS Code](https://img.shields.io/badge/VS%20Code-preserved%20as%20vscode-7bc4f5)](#-nothing-is-lost-the-safety-ladder)
+[![VS Code](https://img.shields.io/badge/VS%20Code-preserved%20as%20vscode-7bc4f5)](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/fire17/bettercode?style=social)](https://github.com/fire17/bettercode/stargazers)
 
 <i>Your muscle memory doesn't change. What it means does.</i>
 
-**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🛡️ Safety](#-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
+**[⚡ Quickstart](#-quickstart)** · **[💬 Quotes-optional prompts](#-the-part-that-should-stop-you)** · **[🛡️ Safety](#%EF%B8%8F-nothing-is-lost-the-safety-ladder)** · **[🔮 Roadmap](#-roadmap-the-patch-mechanism)** · **[🛠️ Making-of](#%EF%B8%8F-how-this-was-built)**
 
 </div>
 
@@ -79,7 +79,7 @@ flowchart LR
 | `code --effort low -p quick q` | effort pre-set (`low…max`) | flags go **before** `-p` |
 | `code --model haiku -p cheap q` | model pre-set | any claude flag works |
 | `code --resume` | plain passthrough | no `-p`, no rewriting |
-| `vscode .` | your previous `code`, untouched | [safety ladder](#-nothing-is-lost-the-safety-ladder) |
+| `vscode .` | your previous `code`, untouched | [safety ladder](#%EF%B8%8F-nothing-is-lost-the-safety-ladder) |
 
 ## 🛡️ Nothing is lost: the safety ladder
 
