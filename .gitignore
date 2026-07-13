@@ -3,5 +3,5 @@
 # local session/ops state — never published
 .save_and_ship/
 conversation/
-.project/
+.project
 CONTINUE.md
