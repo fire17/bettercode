@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.1 — 2026-07-13
+
+- test-only: fix a CI timing race (a lingering background watcher from the
+  stale-frame test could fire into the next test's window on slow runners);
+  guard tests now run the watcher in the foreground, send tests poll the log.
+  Plugin code unchanged.
+
 ## v0.2.0 — 2026-07-13
 
 **`-pp` — the pass-through prompt.** `code -pp any words here` opens a normal
