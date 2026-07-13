@@ -139,14 +139,24 @@ run_pp() { # run code with stub mux dir first on PATH; args after --
     zsh -fc "source '$DIR/bettercode.plugin.zsh'; code $*" 2>&1
 }
 
+wait_log() { # block until $PPLOG contains $1 (or ~10s pass)
+  local i
+  for i in {1..100}; do grep -q "$1" "$PPLOG" 2>/dev/null && return; sleep 0.1; done
+}
+watch_fg() { # run the watcher synchronously (no background races on slow CI)
+  PATH="$TMP/mux:$TMP/bin:$PATH" zsh -fc "
+    source '$DIR/bettercode.plugin.zsh'
+    _BETTERCODE_PP_TRIES=30 _BETTERCODE_PP_INTERVAL=0.01 _bettercode_pp_watch herdr w0:p0 '$1'"
+}
+
 # 13. -pp without a prompt errors
 out="$(PATH="$TMP/bin:$PATH" zsh -fc "source '$DIR/bettercode.plugin.zsh'; code -pp" 2>&1; echo "rc=$?")"
 t "-pp without prompt errors" "yes" "$(print -r -- "$out" | grep -q 'needs a prompt' && print -r -- "$out" | grep -q 'rc=1' && echo yes)"
 
-# 14. herdr path: waits for clear-then-marker, sends prompt then Enter
+# 14. herdr path via code(): waits for clear-then-marker, sends prompt then Enter
 mkstub_herdr normal
 STUB_HERDR_PANE="w0:p0" run_pp -- -pp fix the failing test >/dev/null
-sleep 1
+wait_log "SEND-KEYS"
 t "herdr -pp sends joined prompt + Enter" \
 "SEND-TEXT|fix the failing test
 SEND-KEYS|Enter" \
@@ -154,14 +164,12 @@ SEND-KEYS|Enter" \
 
 # 15. stale-frame guard: marker visible from the first poll -> never send
 mkstub_herdr always-marker
-STUB_HERDR_PANE="w0:p0" run_pp -- -pp danger prompt >/dev/null
-sleep 3
+watch_fg "danger prompt"
 t "stale frame -> no injection (fail-safe)" "" "$(cat "$PPLOG")"
 
 # 16. claude exits after being seen -> watcher aborts, no send
 mkstub_herdr claude-vanishes
-STUB_HERDR_PANE="w0:p0" run_pp -- -pp should never arrive >/dev/null
-sleep 1
+watch_fg "should never arrive"
 t "claude vanished -> watcher aborts" "" "$(cat "$PPLOG")"
 
 # 17. tmux path: send-keys -l prompt, then Enter
@@ -181,7 +189,7 @@ printf '#!/bin/zsh\necho claude\n' > "$TMP/mux/ps"
 chmod +x "$TMP/mux/tmux" "$TMP/mux/ps"
 rm -f "$TMP/mux/herdr"
 STUB_TMUX_PANE="%7" run_pp -- -pp fix the failing test >/dev/null
-sleep 1
+wait_log "SEND-KEYS|-t %7 Enter"
 t "tmux -pp literal send-keys + Enter" \
 "SEND-KEYS|-t %7 -l -- fix the failing test
 SEND-KEYS|-t %7 Enter" \
